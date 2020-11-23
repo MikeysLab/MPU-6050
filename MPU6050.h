@@ -1,6 +1,3 @@
-#pragma once
-// MPU6050.h
-
 #ifndef _MPU6050_h
 #define _MPU6050_h
 
@@ -9,7 +6,7 @@
 #include <wire.h>
 
 #define MPU_POWER_REG                   0x6B
-#define MPU_POWER_CYCLE                 0b00000000
+#define MPU_POWER_CYCLE_STAYAWAKE       0b00000000
 #define MPU_READ_TIMEOUT                2000
 #define MPU_SAMP_FREQ                   250
 
@@ -41,29 +38,55 @@
 #define MPU_ACCEL_CFG_16G               0b00011000
 #define MPU_ACCEL_READINGSCALE_16G      2048.0
 
-
-struct MPUConfig
+class MPUReadings
 {
-
+public:
+	double gForceX, gForceY, gForceZ;
+	double rateRotX, rateRotY, rateRotZ;
+	double calibX, calibY, calibZ;
+	double pitch, roll, yaw;
 };
 
 class MPU6050
 {
 private:
-	int MPU1Address = 0x0;
-	int MPU2Address = 0x0;
-	byte PowerConfig = 0b00000000;
-	byte GyroConfig = 0b00000000;
+	bool Debug = true;
+	int NumberOfSensors = 1;
+	int MPUAddress[2] = { 0x0, 0x0 };
+
+	int GyroCfg = MPU_GYRO_CFG_250DEG;
+	int AccelCfg = MPU_ACCEL_CFG_2G;
+
+	int PowerCfg = MPU_POWER_CYCLE_STAYAWAKE;
+
+	float GyroScale = MPU_GYRO_READINGSCALE_250DEG;
+	float AccelScale = MPU_ACCEL_READINGSCALE_2G;
 
 	bool verifyDeviceAtAddress(int);
 	void setupMPU(int);
+	bool MPUReadGyro(int);
+	bool MPUReadAccel(int);
+	void calibrateGyro(int);
+	bool calcAngle(int);
+	void applyCalibration(int);
 
 public:
-	MPUConfig config;
-	char* lastError;
+	MPUReadings Readings[2];
+	
+	enum AngleModes { TILT, ROTATION, DMP }AngleMode = TILT;
+	
+	//setup functions
+	void SetGyroScale(int);
+	void SetAccelScale(int);
+	void SetPowerMode(int);
+	void SetAngleMode(int);
+	bool begin(int);
+	bool begin(int, int);
+
+	void calibrate();
 
 	bool update();
-	bool begin(int Address, int SDA, int SCL);
+
 
 }; extern MPU6050;
 

@@ -3,3 +3,8 @@ __vm/.MPU-6050.vsarduino.h
 MPU-6050.vcxproj
 MPU-6050.vcxproj.filters
 MPU-6050.vcxproj.user
+/.vs/MPU-6050/v16/ipch/AutoPCH/bac85f938003e449
+/.vs/MPU-6050/v16/ipch/AutoPCH
+/Debug
+/Release
+/__vm
